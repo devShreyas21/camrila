@@ -58,7 +58,7 @@ const LoginV2 = ({ mode }) => {
     e.preventDefault()
 
     try {
-      const result = await axios.post('http://api.camrilla.com/user/login', User);
+      const result = await axios.post('https://api.camrilla.com/user/login', User);
       console.log(result.data.data.token.accessToken); // Assuming the API returns some data upon successful login
       // Navigate to another page or perform other actions upon successful login
       const token = result.data.data.token.accessToken
