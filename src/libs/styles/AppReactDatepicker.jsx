@@ -465,11 +465,11 @@ const StyledReactDatePicker = styled(Box)(({ theme }) => {
 
 const AppReactDatepicker = props => {
     // Props
-    const { boxProps, ...rest } = props
+    const { selected, onChange, boxProps, ...rest } = props
 
     return (
         <StyledReactDatePicker {...boxProps}>
-            <ReactDatePickerComponent popperPlacement='bottom-start' {...rest} />
+            <ReactDatePickerComponent selected={selected} onChange={onChange} popperPlacement='bottom-start' {...rest} />
         </StyledReactDatePicker>
     )
 }

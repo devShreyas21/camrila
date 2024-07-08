@@ -8,7 +8,7 @@ const initialState = {
   events: events,
   filteredEvents: events,
   selectedEvent: null,
-  selectedCalendars: ['Wedding', 'Engagement', 'Birthday', 'others']
+  selectedCalendars: ['Personal', 'Business', 'Family', 'Holiday', 'ETC']
 }
 
 const filterEvents = (events, selectedCalendars) => {
@@ -30,15 +30,9 @@ export const calendarSlice = createSlice({
         if (action.payload._def && event.id === action.payload._def.publicId) {
           return {
             id: event.id,
+            url: action.payload._def.url,
             title: action.payload._def.title,
-            email: action.payload._def.email,
-            phone: action.payload._def.phone,
-            address: action.payload._def.address,
-            venue: action.payload._def.venue,
-            alternateNo: action.payload._def.alternateNo,
             allDay: action.payload._def.allDay,
-            assignTo: action.payload._def.assignTo,
-            function: action.payload._def.function,
             end: action.payload._instance.range.end,
             start: action.payload._instance.range.start,
             extendedProps: action.payload._def.extendedProps
@@ -53,14 +47,8 @@ export const calendarSlice = createSlice({
         if (action.payload._def && event.id === action.payload._def.publicId) {
           return {
             id: event.id,
+            url: action.payload._def.url,
             title: action.payload._def.title,
-            email: action.payload._def.email,
-            phone: action.payload._def.phone,
-            address: action.payload._def.address,
-            venue: action.payload._def.venue,
-            alternateNo: action.payload._def.alternateNo,
-            asignTo: action.payload._def.assignTo,
-            function: action.payload._def.function,
             allDay: action.payload._def.allDay,
             end: action.payload._instance.range.end,
             start: action.payload._instance.range.start,
@@ -92,7 +80,7 @@ export const calendarSlice = createSlice({
       state.events = filterEvents(state.filteredEvents, state.selectedCalendars)
     },
     filterAllCalendarLabels: (state, action) => {
-      state.selectedCalendars = action.payload ? ['Wedding', 'Engagement', 'Birthday', 'Others'] : []
+      state.selectedCalendars = action.payload ? ['Personal', 'Business', 'Family', 'Holiday', 'ETC'] : []
       state.events = filterEvents(state.filteredEvents, state.selectedCalendars)
     }
   }

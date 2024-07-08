@@ -5,143 +5,177 @@ import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
-import { Drawer, Box, TextField, Button, IconButton, FormControl, Input, InputLabel, FormHelperText } from '@mui/material'
+import { Drawer, Box, TextField, Button, IconButton, FormControl, Input, InputLabel, FormHelperText, MenuItem, Select } from '@mui/material'
+import { useRouter } from 'next/navigation'
+import { convertDMYToUnixTimestamp } from '@/utils/date'
 import NoteAddIcon from '@mui/icons-material/NoteAdd'; // Import Note Add Icon
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import ReactQuill from 'react-quill'
 
-import { Dropdown, MenuButton, Menu, MenuItem } from '@mui/material'
-
+import { Grid, Alert } from '@mui/material'
 import OptionMenu from '@core/components/option-menu'
-import CustomAvatar from '@core/components/mui/Avatar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { getDayOfWeekShort, getDayOfMonth, getSimpleTime, getMonthNameShort } from '@/utils/date'
+import axios from 'axios'
 
+export default function Leads(props) {
+  const router = useRouter()
+  const [resData, setResData] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedMeeting, setSelectedMeeting] = useState(null);
+  const [view, setView] = useState('info');
+  const [isAddLead, setIsAddLead] = useState(false);
+  const [updatedFormValues, setUpdatedFormValues] = useState({});
+  const [newLead, setNewLead] = useState({
+    customerName: '',
+    customerMobile: '',
+    assignmentDateTime: '',
+    customerEmail: '',
+    customerAddress: '',
+    totalAmount: '',
+  });
 
-export default function Leads() {
+  const handleAddLead = async () => {
+    try {
+      const body = {
+        customerName: newLead.customerName,
+        customerMobile: newLead.customerMobile,
+        assignmentDateTime: convertDMYToUnixTimestamp(newLead.assignmentDateTime),
+        customerEmail: newLead.customerEmail,
+        customerAddress: newLead.customerAddress,
+        totalAmount: newLead.totalAmount,
+      };
 
-  const data = [
-    {
-      time: "10:00 am",
-      title: 'Call with Woods',
-      subtitle: '21',
-      month: 'Jul',
-      chipLabel: 'Wedding',
-      chipColor: 'primary',
-      address: "ll colony",
-      budget: "55k",
-      status: "New"
-    },
-    {
-      time: "9:00 am",
-      title: 'Conference call',
-      subtitle: '24',
-      month: 'Jul',
-      chipLabel: 'Others',
-      chipColor: 'success',
-      address: "KJ colony",
-      budget: "10k",
-      status: "In progres"
-    },
-    {
-      time: "9:30 am",
-      title: 'Meeting with Mark',
-      subtitle: '28',
-      month: 'Jul',
-      chipLabel: 'Engagement',
-      chipColor: 'error',
-      address: "RR colony",
-      budget: "20k",
-      status: "Converted"
-    },
-    {
-      time: "7:30 pm",
-      title: 'Meeting with Oakland',
-      subtitle: '03',
-      month: 'Aug',
-      chipLabel: 'Birthday',
-      chipColor: 'secondary',
-      address: "RK colony",
-      budget: "80k",
-      status: "Closed"
-    },
-    {
-      time: '11:00 am',
-      title: 'Meeting in Oakland',
-      subtitle: '14',
-      month: 'Aug',
-      chipLabel: 'Engagement',
-      chipColor: 'error',
-      address: "VJ colony",
-      budget: "20k",
-      status: "new"
-    },
-    {
-      time: "11:00 am",
-      title: 'Meeting with Carl',
-      address: "Ruston colony",
-      budget: "50k",
-      subtitle: '05',
-      month: 'Aug',
-      chipLabel: 'Wedding',
-      chipColor: 'primary',
-      status: "Converted"
+      const response = await axios.post('http://api.camrilla.com/lead-manager/lead', body, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      console.log(response.data);
+      setDrawerOpen(false);
+      setIsAddLead(false);
+      fetchData(); // Call fetchData to refresh the lead list
+    } catch (error) {
+      console.error('Error adding lead:', error);
     }
-  ]
-
-  const [drawerOpen, setDrawerOpen] = useState(false); // State for Drawer
-  const [selectedMeeting, setSelectedMeeting] = useState(null); // State for selected meeting
-  const [note, setNote] = useState(''); // State for note content
-  const [view, setView] = useState('info'); // State to differentiate between info and note view
-
-  const handleDivClick = (meeting) => {
-    setSelectedMeeting(meeting); // Set the selected meeting
-    setView('info'); // Set view to info
-    setDrawerOpen(true); // Open the Drawer
   };
 
-  const handleIconClick = (meeting) => {
-    setSelectedMeeting(meeting); // Set the selected meeting
-    setDrawerOpen(true); // Open the Drawer
-    setView('note')
+  const handleUpdateFormChange = (event) => {
+    const { id, value } = event.target;
+    setUpdatedFormValues((prevValues) => ({ ...prevValues, [id]: value }));
+  };
+
+  const handleUpdateLeadClick = async () => {
+    try {
+      const updatedBody = {
+        customerName: updatedFormValues.utitle,
+        customerMobile: updatedFormValues.umobile,
+        assignmentDateTime: updatedFormValues.udate,
+        customerEmail: updatedFormValues.uemail,
+        status: updatedFormValues.ustatus,
+        customerAddress: updatedFormValues.uaddress,
+        totalAmount: updatedFormValues.ubudget,
+      };
+
+      const response = await axios.put(`http://api.camrilla.com/lead-manager/lead/2`, updatedBody, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error updating lead:', error);
+    }
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://api.camrilla.com/lead-manager/lead`, {
+        headers: {
+          'Authorization': props.token
+        }
+      });
+      setResData(response.data.data);
+      console.log(response.data.data);
+    }
+    catch (error) {
+      if (error.response && error.response.status === 401) {
+        router.push('/login')
+        localStorage.setItem('accessToken', '');
+      } else {
+        console.error(error)
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const handleDivClick = (meeting) => {
+    setSelectedMeeting(meeting);
+    setView('info');
+    setDrawerOpen(true);
+  };
+
+  const handleAddLeadClick = () => {
+    setIsAddLead(true);
+    setDrawerOpen(true);
   };
 
   const handleDrawerClose = () => {
-    setDrawerOpen(false); // Close the Drawer
-    setSelectedMeeting(null); // Clear the selected meeting
-    setNote(''); // Clear the note content
-  }
-
+    setDrawerOpen(false);
+    setSelectedMeeting(null);
+    setIsAddLead(false);
+  };
 
   return (
-    <div>
-      <Card>
-        <CardHeader title='Leads' action={<OptionMenu options={['Refresh', 'Share', 'Reschedule']} />} />
-        <CardContent className='flex flex-col gap-6' style={{ paddingBottom: "25px" }}>
-          {data.map((item, index) => (
+
+    <Card style={{ width: "700px" }}>
+      <CardHeader title='Leads' action={<><Button variant='contained' color='primary' startIcon={<NoteAddIcon />} onClick={handleAddLeadClick}>Add Lead</Button> <OptionMenu options={['Refresh', 'Share', 'Reschedule']} /></>} />
+      <CardContent className='flex flex-col gap-6' style={{ paddingBottom: "25px" }}>
+        {resData ? (
+          resData && resData.map((item, index) => (
 
             <div key={index} className='flex items-center gap-4' style={{ borderBottom: "2px solid black", paddingBottom: "10px", paddingLeft: "10px" }}>
 
-              {/* <CustomAvatar variant='rounded' src={item.avatarSrc} size={38} /> */}
-
               <div className='flex items-center gap-4'>
                 <div style={{ width: "35px" }} onClick={() => handleDivClick(item)}>
-                  <div>{item.subtitle}</div>
-                  <div>{item.month}</div>
+                  <div style={{ textAlign: "center" }}>{getMonthNameShort(item.assignmentDateTime)}</div>
+                  <div style={{ textAlign: "center" }}>{getDayOfMonth(item.assignmentDateTime)}</div>
+                  <div style={{ textAlign: "center" }}>{getDayOfWeekShort(item.assignmentDateTime)}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <div style={{ width: "230px" }} onClick={() => handleDivClick(item)}>
+                  <div style={{ width: "130px" }} onClick={() => handleDivClick(item)}>
                     <Typography variant='body2'>
-                      {item.title} &nbsp; [{item.time}] &nbsp;
+                      {item.customerName}
+                    </Typography>
+                  </div>
+                  <div style={{ width: "100px" }} onClick={() => handleDivClick(item)}>
+                    <Typography variant='body2'>
+                      {getSimpleTime(item.assignmentDateTime)}
                     </Typography>
                   </div>
                   <div style={{ width: "170px" }}>
                     <Typography>
-                      {item.address}
+                      {item.customerAddress}
+                    </Typography>
+                  </div>
+                  <div style={{ width: "200px" }}>
+                    <Typography>
+                      {item.customerEmail}
                     </Typography>
                   </div>
                   <div style={{ width: "100px" }}>
                     <Typography>
-                      {item.budget}
+                      {item.customerMobile}
+                    </Typography>
+                  </div>
+                  <div style={{ width: "50px" }}>
+                    <Typography>
+                      {item.totalAmount}
                     </Typography>
                   </div>
                   <div style={{ width: "65px" }}>
@@ -149,92 +183,140 @@ export default function Leads() {
                       {item.status}
                     </Typography>
                   </div>
-                  {/* <div>
-                          <IconButton onClick={() => handleIconClick(item)} aria-label="add note">
-                          <NoteAddIcon style={{ color: 'red' }} />
-                          </IconButton>
-                      </div> */}
                 </div>
               </div>
               <div onClick={() => handleDivClick(item)}>
-                <Chip label={item.chipLabel} color={item.chipColor} size='small' variant='tonal' />
+                <Chip label={item.assignmentType} color="primary" size='small' variant='tonal' />
               </div>
 
             </div>
 
-          ))}
-        </CardContent>
+          ))) : (<Typography variant="body1">No leads</Typography>)}
+      </CardContent>
 
-        <Drawer anchor='right' open={drawerOpen} onClose={handleDrawerClose}>
-          <Box sx={{ width: 300, padding: 2 }}>
-            {selectedMeeting && view === 'info' && (
-              <>
-                <Card className='bs-full' id='editable'>
-                  <CardHeader
-                    title='Update Lead'
-                  // action={<OptionMenu options={['Refresh', 'Share', 'Update']} />}
-                  // subheader={
-                  //   <div className='flex items-center gap-2'>
-                  //     <span>Total 42.5k Sales</span>
-                  //     <span className='flex items-center text-success font-medium'>
-                  //       +18%
-                  //       <i className='ri-arrow-up-s-line text-xl' />
-                  //     </span>
-                  //   </div>
-                  // }
-                  />
-                  <CardContent>
-                    <div className='flex flex-wrap justify-between gap-4'>
-
-                      <div className='flex items-center gap-3'>
-                        <div>
-                          {/* <Typography variant='h5'>{selectedMeeting.title}</Typography> */}
-                          {/* <Typography>{selectedMeeting.subtitle} {selectedMeeting.month} {selectedMeeting.time}</Typography> */}
-                          <FormControl className='my-4'>
-                            <TextField value={selectedMeeting.title} id="title" label='Title' />
-                          </FormControl>
-                          <FormControl className='my-4'>
-                            <TextField value={selectedMeeting.address} label='Address' />
-                          </FormControl>
-                          <FormControl className='my-4'>
-                            <TextField value={selectedMeeting.budget} label='Budget' />
-                          </FormControl>
-                          <FormControl className='my-4'>
-                            <TextField value={selectedMeeting.status} label='Status' />
-                          </FormControl>
-                          <FormControl className='my-4'>
-                            <TextField value={selectedMeeting.chipLabel} label='Event' />
-                          </FormControl>
-                          <FormControl className='my-4'>
-                            <Button onClick={() => console.log(document.getElementById('title').value)}>Update Lead</Button>
-                          </FormControl>
-                        </div>
-                      </div>
-
-                    </div>
-                  </CardContent>
-                </Card>
-
-              </>
-            )}
-            {/* {selectedMeeting && view === 'note' && (
-            <>
-              <Typography variant='h6' gutterBottom>
-                Add Note
+      <Drawer anchor="right" open={drawerOpen} onClose={handleDrawerClose}>
+        <Box sx={{ width: 300, padding: 2 }}>
+          {isAddLead ? (
+            <form>
+              <Typography variant="h6" gutterBottom>
+                <h2>Add Lead</h2>
               </Typography>
-              <ReactQuill value={note} onChange={setNote} className='my-3' style={{ height: '300px' }} />
-              <Button variant='contained' color='primary' fullWidth>
-                Save Note
+              <TextField label="Customer Name" fullWidth margin="normal" id="customerName" value={newLead.customerName}
+                onChange={(e) => setNewLead({ ...newLead, customerName: e.target.value })} />
+              <TextField label="Email" fullWidth margin="normal" id="email" value={newLead.customerEmail}
+                onChange={(e) => setNewLead({ ...newLead, customerEmail: e.target.value })} />
+              <TextField label="Phone Number" fullWidth margin="normal" id="phoneNumber" value={newLead.customerMobile}
+                onChange={(e) => setNewLead({ ...newLead, customerMobile: e.target.value })} />
+              <TextField label="Address" fullWidth margin="normal" id="address" value={newLead.customerAddress}
+                onChange={(e) => setNewLead({ ...newLead, customerAddress: e.target.value })} />
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="select-label">Select Option</InputLabel>
+                <Select labelId="select-label" label="Select Option" id="selectedOption" value={newLead.assignmentType}
+                  onChange={(e) => setNewLead({ ...newLead, assignmentType: e.target.value })}>
+                  <MenuItem value="Wedding">Wedding</MenuItem>
+                  <MenuItem value="Birthday">Birthday</MenuItem>
+                  <MenuItem value="Others">Others</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField label="Budget" fullWidth margin="normal" id="budget" value={newLead.totalAmount}
+                onChange={(e) => setNewLead({ ...newLead, totalAmount: e.target.value })} />
+              <TextField
+                label="Date"
+                type="date"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                id="date"
+                value={newLead.assignmentDateTime}
+                onChange={(e) => setNewLead({ ...newLead, assignmentDateTime: e.target.value })}
+              />
+              <Button variant="contained" color="primary" fullWidth onClick={handleAddLead}>
+                Add Lead
               </Button>
-            </>
-          )} */}
-          </Box>
-        </Drawer>
+            </form>
+          ) : (
+            <Card className="bs-full" id="editable">
+              <CardHeader title="Update Lead" />
+              <CardContent>
+                {selectedMeeting ? (
+                  <div className="flex flex-wrap justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.utitle || selectedMeeting.customerName} // new state variable
+                            id="utitle"
+                            label="Title"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.udate || selectedMeeting.assignmentDateTime}
+                            id="udate"
+                            label="Title"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.uaddress || selectedMeeting.customerAddress}
+                            id="uaddress"
+                            label="Address"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.umobile || selectedMeeting.customerMobile}
+                            id="umobile"
+                            label="Mobile"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.uemail || selectedMeeting.customerEmail}
+                            id="uemail"
+                            label="Email"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.ubudget || selectedMeeting.totalAmount}
+                            id="ubudget"
+                            label="Budget"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <TextField
+                            value={updatedFormValues.ustatus || selectedMeeting.status}
+                            id="ustatus"
+                            label="Status"
+                            onChange={handleUpdateFormChange}
+                          />
+                        </FormControl>
+                        <FormControl className="my-4">
+                          <Button onClick={handleUpdateLeadClick}>Update Lead</Button>
+                        </FormControl>
+                      </div>
+                    </div>
+                  </div>
+
+                ) : (<Typography variant="body1">No meeting selected</Typography>)}
+              </CardContent>
+            </Card>
+          )}
+        </Box>
+      </Drawer>
 
 
-      </Card>
+    </Card >
 
 
-    </div>
   )
 }

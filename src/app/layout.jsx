@@ -7,8 +7,10 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
+import Head from 'next/head'
+
 export const metadata = {
-  title: 'Materialize - Material Next.js Admin Template',
+  title: 'Camrilla ',
   description: 'Materialize - Material Next.js Admin Template'
 }
 

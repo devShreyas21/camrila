@@ -3,8 +3,9 @@
 // React Imports
 import { useState } from 'react'
 
+import axios from 'axios'
+
 // Next Imports
-import { useRouter } from 'next/navigation'
 
 // MUI Imports
 import Typography from '@mui/material/Typography'
@@ -27,12 +28,48 @@ import Logo from '@components/layout/shared/Logo'
 import themeConfig from '@configs/themeConfig'
 
 // Hook Imports
+import { useRouter } from 'next/navigation'
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 
+import WelcomeComponent from '@/components/welcome/WelcomeComponent'
+
 const LoginV2 = ({ mode }) => {
+
+  const router = useRouter()
+
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+
+  const [isLoggedIn, setisLoggedIn] = useState(false)
+
+  const [User, setUser] = useState({
+    email: "",
+    password: ""
+  })
+
+  const changed = (e) => {
+    setUser({ ...User, [e.target.name]: e.target.value })
+    // console.log(User)
+  }
+
+  const submited = async (e) => {
+    console.log(User)
+    e.preventDefault()
+
+    try {
+      const result = await axios.post('http://api.camrilla.com/user/login', User);
+      console.log(result.data.data.token.accessToken); // Assuming the API returns some data upon successful login
+      // Navigate to another page or perform other actions upon successful login
+      const token = result.data.data.token.accessToken
+      localStorage.setItem('accessToken', token)
+      router.push('/')
+    } catch (error) {
+      console.error('Error logging in:', error);
+      // Handle error appropriately, e.g., show error message to user
+    }
+    // router.push('/')
+  }
 
   // Vars
   const darkImg = '/images/pages/auth-v2-mask-1-dark.png'
@@ -43,7 +80,6 @@ const LoginV2 = ({ mode }) => {
   const borderedLightIllustration = '/images/illustrations/auth/v2-login-light-border.png'
 
   // Hooks
-  const router = useRouter()
   const { settings } = useSettings()
   const authBackground = useImageVariant(mode, lightImg, darkImg)
 
@@ -56,6 +92,11 @@ const LoginV2 = ({ mode }) => {
   )
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
+
+  // Render login form or target component based on login state
+  if (isLoggedIn) {
+    return <WelcomeComponent user={User} />
+  }
 
   return (
     <div className='flex bs-full justify-center'>
@@ -82,22 +123,23 @@ const LoginV2 = ({ mode }) => {
         </div>
         <div className='flex flex-col gap-5 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset] mbs-11 sm:mbs-14 md:mbs-0'>
           <div>
-            <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
+            <Typography variant='h4'>{`Welcome to Camrilla! 👋🏻`}</Typography>
             <Typography className='mbs-1'>Please sign-in to your account and start the adventure</Typography>
           </div>
           <form
             noValidate
             autoComplete='off'
-            onSubmit={e => {
-              e.preventDefault()
-              router.push('/')
-            }}
+            onSubmit={submited}
             className='flex flex-col gap-5'
           >
-            <TextField autoFocus fullWidth label='Email' />
+            <TextField autoFocus fullWidth label='Email' id='email' name="email" onChange={changed} />
+
             <TextField
               fullWidth
               label='Password'
+              id='password'
+              name="password"
+              onChange={changed}
               type={isPasswordShown ? 'text' : 'password'}
               InputProps={{
                 endAdornment: (
@@ -120,7 +162,7 @@ const LoginV2 = ({ mode }) => {
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit'>
+            <Button fullWidth variant='contained' type='submit' >
               Log In
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>

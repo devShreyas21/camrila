@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 // Next Imports
 import { useRouter } from 'next/navigation'
@@ -60,9 +60,16 @@ const UserDropdown = () => {
     setOpen(false)
   }
 
+  useEffect(() => {
+    console.log(localStorage.getItem('accessToken'))
+  }, [])
+
   const handleUserLogout = async () => {
     // Redirect to login page
-    router.push('/login')
+    localStorage.setItem('accessToken', '')
+    router.push('/')
+    console.log(localStorage.getItem('accessToken'))
+
   }
 
   const handleWebsiteRedirect = () => {
