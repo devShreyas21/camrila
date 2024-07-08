@@ -46,7 +46,7 @@ export default function Leads(props) {
         totalAmount: newLead.totalAmount,
       };
 
-      const response = await axios.post('http://api.camrilla.com/lead-manager/lead', body, {
+      const response = await axios.post('https://api.camrilla.com/lead-manager/lead', body, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -78,7 +78,7 @@ export default function Leads(props) {
         totalAmount: updatedFormValues.ubudget,
       };
 
-      const response = await axios.put(`http://api.camrilla.com/lead-manager/lead/2`, updatedBody, {
+      const response = await axios.put(`https://api.camrilla.com/lead-manager/lead/2`, updatedBody, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -92,7 +92,7 @@ export default function Leads(props) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`http://api.camrilla.com/lead-manager/lead`, {
+      const response = await axios.get(`https://api.camrilla.com/lead-manager/lead`, {
         headers: {
           'Authorization': props.token
         }

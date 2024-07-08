@@ -8,7 +8,7 @@ export default function ProfileCard() {
     const [ResData, setResData] = useState(null)
 
     const fetchData = async (tkn) => {
-        const response = await axios.get('http://api.camrilla.com/payment-history', {
+        const response = await axios.get('https://api.camrilla.com/payment-history', {
             headers: {
                 'Authorization': tkn
             }

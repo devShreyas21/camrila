@@ -93,7 +93,7 @@ export default function Schedule(props) {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://api.camrilla.com/order/assignment?startDate=${props.startUnixDate}&endDate=${props.endUnixDate}`, {
+            const response = await axios.get(`https://api.camrilla.com/order/assignment?startDate=${props.startUnixDate}&endDate=${props.endUnixDate}`, {
                 headers: {
                     'Authorization': props.token
                 }

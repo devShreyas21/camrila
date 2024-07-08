@@ -34,7 +34,7 @@ export default function Page() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://api.camrilla.com/order/assignment?startDate=1717220557000&endDate=1719807716000', {
+      const response = await axios.get('https://api.camrilla.com/order/assignment?startDate=1717220557000&endDate=1719807716000', {
         headers: { 'Authorization': localStorage.getItem('accessToken') }
       })
 

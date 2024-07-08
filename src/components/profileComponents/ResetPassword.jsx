@@ -36,7 +36,7 @@ export default function ResetPassword() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        'http://api.camrilla.com/user/reset-password',
+        'https://api.camrilla.com/user/reset-password',
         {
           email,
           oldPassword,

@@ -48,7 +48,7 @@ export default function Pricing() {
     console.log(`Coupon code: ${couponCode}`);
     console.log(`Subscription period: From ${new Date().toLocaleDateString()} to ${new Date(Date.now() + 31536000000).toLocaleDateString()}`);
 
-    const response = await axios.post('http://api.camrilla.com/initiate-payment-request', {
+    const response = await axios.post('https://api.camrilla.com/initiate-payment-request', {
       "id": 1,
       "discountCouponCode": "2020"
     }, { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } })
@@ -93,7 +93,7 @@ export default function Pricing() {
       const orderId = `camrilla_34_${payment_id}`; // Use the payment ID to construct the order ID
       const requestBody = { orderId };
 
-      fetch('http://api.camrilla.com/update-payment-response', {
+      fetch('https://api.camrilla.com/update-payment-response', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${bearerToken}`,
