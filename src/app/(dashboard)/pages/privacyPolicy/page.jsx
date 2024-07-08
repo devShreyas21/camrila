@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useRouter } from 'next/navigation'
 
-export default function page() {
+export default function Page() {
 
   const router = useRouter()
 

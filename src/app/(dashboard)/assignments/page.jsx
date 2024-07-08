@@ -6,7 +6,7 @@ import Schedule from '@/components/assignmentSchedule/Schedule'
 import { useRouter } from 'next/navigation';
 import { startOfMonth, endOfMonth } from 'date-fns'
 
-export default function page() {
+export default function Page() {
 
     const router = useRouter()
 

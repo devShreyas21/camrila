@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import { Alert } from '@mui/material'
 
-export default function page() {
+export default function Page() {
 
     const router = useRouter()
 

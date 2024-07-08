@@ -14,7 +14,7 @@ const Profile = () => <ProfileCard />;
 const Reset = () => <ResetPassword />;
 const Projects = () => <ContactUs />;
 
-export default function page() {
+export default function Page() {
 
     const router = useRouter()
 

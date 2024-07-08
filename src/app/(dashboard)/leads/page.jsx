@@ -6,7 +6,7 @@ import Leads from '@components/leads/Leads'
 import { useRouter } from 'next/navigation'
 import { Card } from '@mui/material'
 
-export default function page() {
+export default function Page() {
 
     const router = useRouter()
 

@@ -26,8 +26,8 @@ export default function Table(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.data && props.data.map((item) => (
-                                        <tr>
+                                    {props.data && props.data.map((item, index) => (
+                                        <tr key={index}>
                                             <td className='text-center'>{item.customerName}</td>
                                             <td className='text-center'>{item.assignmentName}</td>
                                             <td className='text-center'>{item.totalAmount}</td>
@@ -57,8 +57,8 @@ export default function Table(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.data && props.data.map((item) => (
-                                        <tr>
+                                    {props.data && props.data.map((item, index) => (
+                                        <tr key={index}>
                                             <td className='text-center'>{item.customerName}</td>
                                             <td className='text-center'>{item.assignmentName}</td>
                                             <td className='text-center'>{item.totalAmount}</td>
@@ -87,8 +87,8 @@ export default function Table(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.data && props.data.map((item) => (
-                                        <tr>
+                                    {props.data && props.data.map((item, index) => (
+                                        <tr key={index}>
                                             <td className='text-center'>{item.customerName}</td>
                                             <td className='text-center'>{item.assignmentName}</td>
                                             <td className='text-center'>{item.transactions.reduce((total, item2) => total + item2.receivedPayment, 0)}</td>
@@ -117,8 +117,8 @@ export default function Table(props) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.data && props.data.map((item) => (
-                                        <tr>
+                                    {props.data && props.data.map((item, index) => (
+                                        <tr key={index}>
                                             <td className='text-center'>{item.customerName}</td>
                                             <td className='text-center'>{item.assignmentName}</td>
                                             <td className='text-center'>

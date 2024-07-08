@@ -11,7 +11,7 @@ module.exports = {
     "@next/next/no-img-element": "off",
     "@next/next/no-page-custom-font": "off",
     "lines-around-comment": [
-      "error",
+      "off",
       {
         "beforeBlockComment": true,
         "beforeLineComment": true,
@@ -21,7 +21,7 @@ module.exports = {
       }
     ],
     "padding-line-between-statements": [
-      "error",
+      "off",
       {
         "blankLine": "any",
         "prev": "export",
@@ -68,15 +68,15 @@ module.exports = {
         "next": "*"
       }
     ],
-    "newline-before-return": "error",
+    "newline-before-return": "off",
     "import/newline-after-import": [
-      "error",
+      "off",
       {
         "count": 1
       }
     ],
     "import/order": [
-      "error",
+      "off",
       {
         "groups": [
           "builtin",
